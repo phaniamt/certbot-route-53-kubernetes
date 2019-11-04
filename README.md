@@ -62,3 +62,42 @@ https://hub.docker.com/r/certbot/dns-route53/dockerfile
             - name: AWS_SECRET_ACCESS_KEY
               value: XXXXXXXXXXXXXXXXXXXXX
           restartPolicy: Never
+# Ingress with ssl
+
+    apiVersion: extensions/v1beta1
+    kind: Ingress
+    metadata:
+      name: nginx
+    spec:
+      tls:
+      - secretName: mysql-tls
+        hosts:
+        - phpmyadmin.example.com
+        - mysql.example.com
+      - secretName: postgres-tls
+        hosts:
+        - postgres.example.com
+      rules:
+      - host: phpmyadmin.example.com
+        http:
+          paths:
+          - path: /
+            backend:
+              serviceName: phpmyadmin
+              servicePort: 80
+      rules:
+      - host: mysql.example.com
+        http:
+          paths:
+          - path: /
+            backend:
+              serviceName: mysql
+              servicePort: 80
+      rules:
+      - host: postgres.example.com
+        http:
+          paths:
+          - path: /
+            backend:
+              serviceName: postgres
+              servicePort: 80
