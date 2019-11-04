@@ -11,11 +11,29 @@ echo "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}" >> /opt/aws-config
 
 NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 
-kubectl delete secret ${SECRET} || true
 
+certbot certonly -d ${DOMAIN} --dns-route53  -m  ${EMAIL} --agree-tos --non-interactive --server https://acme-v02.api.letsencrypt.org/directory   || exit 1
+
+kubectl get secret  ${SECRET}
+
+if [ $? = 0 ]
+                then
+                echo "============================="
+                echo "${SECRET} is already created "
+                echo "============================="
+                else
+
+                echo "============================="
+                echo "${SECRET} is creating "
+                echo "============================="
 kubectl create secret generic ${SECRET}
 
-certbot certonly -d ${DOMAIN} --dns-route53  -m  ${EMAIL} --agree-tos --non-interactive --server https://acme-v02.api.letsencrypt.org/directory
+                echo "======================="
+                echo "${SECRET} is created "
+                echo "======================="
+
+fi
+
 
 
 CERTPATH=/etc/letsencrypt/live/*
