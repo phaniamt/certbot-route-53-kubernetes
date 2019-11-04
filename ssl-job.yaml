@@ -5,6 +5,7 @@ metadata:
   labels:
     app: letsencrypt
 spec:
+  backoffLimit: 1
   template:
     metadata:
       name: letsencrypt
